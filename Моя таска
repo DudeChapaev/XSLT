@@ -1,38 +1,44 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:output method="html" encoding="UTF-8" indent="yes"/>
-    <xsl:template match="/courses">
+    <xsl:key name="teacher" match="course" use="teachers/teacher"/>
+    <xsl:key name="keyword" match="course" use="keywords/keyword"/>
+
+    <xsl:template match="/">
         <html>
             <head>
                 <title>Наши курсы</title>
             </head>
             <body>
                 <h1>Наши курсы</h1>
-                <xsl:apply-templates select="course/teachers/teacher" mode="by-teacher"/>
+                
+                <h3>Курсы, которые читает Борисов И.О.</h3>
+                <ul>
+                    <xsl:apply-templates select="key('teacher', 'Борисов И.О.')" mode="teacher"/>
+                </ul>
+
                 <h3>Курсы, которые используют XML</h3>
                 <ul>
-                    <xsl:apply-templates select="course[keywords/keyword='XML']"/>
+                    <xsl:apply-templates select="key('keyword', 'XML')" mode="keyword"/>
                 </ul>
-                <h3>Курсы, которые используют XSLT</h3>
+
+                <h3>Курсы, которые читает Борисов И.О. и используют XSLT</h3>
                 <ul>
-                    <xsl:for-each select="course/teachers/teacher">
-                        <xsl:variable name="teacher" select="." />
-                        <h4>Курсы, которые читает <xsl:value-of select="$teacher"/></h4>
-                        <xsl:apply-templates select="/courses/course[teachers/teacher=$teacher and keywords/keyword='XSLT']"/>
-                    </xsl:for-each>
+                    <xsl:apply-templates select="key('teacher', 'Борисов И.О.')[
+                        keywords/keyword = 'XSLT']" mode="teacher-keyword"/>
                 </ul>
             </body>
         </html>
     </xsl:template>
-    <xsl:template match="teacher" mode="by-teacher">
-        <xsl:variable name="teacher" select="." />
-        <h3>Курсы, которые читает <xsl:value-of select="$teacher"/></h3>
-        <ul>
-            <xsl:for-each select="/courses/course[teachers/teacher=$teacher]">
-                <li><xsl:value-of select="title"/></li>
-            </xsl:for-each>
-        </ul>
+
+    <xsl:template match="course" mode="teacher">
+        <li><xsl:value-of select="title"/></li>
     </xsl:template>
-    <xsl:template match="course">
+
+    <xsl:template match="course" mode="keyword">
+        <li><xsl:value-of select="title"/></li>
+    </xsl:template>
+
+    <xsl:template match="course" mode="teacher-keyword">
         <li><xsl:value-of select="title"/></li>
     </xsl:template>
 </xsl:stylesheet>
