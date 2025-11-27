@@ -1,0 +1,38 @@
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:output method="html" encoding="UTF-8" indent="yes"/>
+    <xsl:template match="/courses">
+        <html>
+            <head>
+                <title>Наши курсы</title>
+            </head>
+            <body>
+                <h1>Наши курсы</h1>
+                <xsl:apply-templates select="course/teachers/teacher" mode="by-teacher"/>
+                <h3>Курсы, которые используют XML</h3>
+                <ul>
+                    <xsl:apply-templates select="course[keywords/keyword='XML']"/>
+                </ul>
+                <h3>Курсы, которые используют XSLT</h3>
+                <ul>
+                    <xsl:for-each select="course/teachers/teacher">
+                        <xsl:variable name="teacher" select="." />
+                        <h4>Курсы, которые читает <xsl:value-of select="$teacher"/></h4>
+                        <xsl:apply-templates select="/courses/course[teachers/teacher=$teacher and keywords/keyword='XSLT']"/>
+                    </xsl:for-each>
+                </ul>
+            </body>
+        </html>
+    </xsl:template>
+    <xsl:template match="teacher" mode="by-teacher">
+        <xsl:variable name="teacher" select="." />
+        <h3>Курсы, которые читает <xsl:value-of select="$teacher"/></h3>
+        <ul>
+            <xsl:for-each select="/courses/course[teachers/teacher=$teacher]">
+                <li><xsl:value-of select="title"/></li>
+            </xsl:for-each>
+        </ul>
+    </xsl:template>
+    <xsl:template match="course">
+        <li><xsl:value-of select="title"/></li>
+    </xsl:template>
+</xsl:stylesheet># XSLT
