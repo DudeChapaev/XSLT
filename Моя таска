@@ -35,4 +35,4 @@
     <xsl:template match="course">
         <li><xsl:value-of select="title"/></li>
     </xsl:template>
-</xsl:stylesheet># XSLT
+</xsl:stylesheet>
